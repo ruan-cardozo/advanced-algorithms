@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"advanced-algorithms/utils"
 	"fmt"
 	"time"
 )
@@ -35,8 +36,8 @@ func (s *Sorter) ExecuteSort(arr []int) float64 {
 	}
 
     fmt.Printf("Execution Time (ms): %.6f\n", duration)
-	fmt.Println("Comparisons:", comparisons)
-	fmt.Println("Swaps:", swaps)
+	fmt.Println("Comparisons:", utils.FormatNumber(comparisons))
+	fmt.Println("Swaps:", utils.FormatNumber(swaps))
 
 	return duration
 }

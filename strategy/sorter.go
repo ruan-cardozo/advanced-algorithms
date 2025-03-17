@@ -1,21 +1,42 @@
 package strategy
 
+import (
+	"fmt"
+	"time"
+)
+
 type SortStrategy interface {
-	Sort([]int) []int
+	Sort([]int) ([]int, int, int)
 }
 
 type Sorter struct {
-	strategy SortStrategy
+	Strategy SortStrategy
 }
 
-func NewSorter(s SortStrategy) *Sorter {
-	return &Sorter{strategy: s}
+func NewSorter(strategy SortStrategy) *Sorter {
+    return &Sorter{Strategy: strategy}
 }
 
 func (s *Sorter) SetStrategy(strategy SortStrategy) {
-	s.strategy = strategy
+	s.Strategy = strategy
 }
 
-func (s *Sorter) Sort(arr []int) []int {
-	return s.strategy.Sort(arr)
+func (s *Sorter) ExecuteSort(arr []int) float64 {
+	start := time.Now()
+	sortedArray, comparisons, swaps := s.Strategy.Sort(arr)
+	duration := time.Since(start).Seconds() * 1000
+
+	// Limitar a impressão do array
+	const maxPrintElements = 10
+	if len(sortedArray) > maxPrintElements {
+		fmt.Printf("Sorted Array: %v ... %v\n", sortedArray[:5], sortedArray[len(sortedArray)-5:])
+	} else {
+		fmt.Println("Sorted Array:", sortedArray)
+	}
+
+    fmt.Printf("Execution Time (ms): %.6f\n", duration)
+	fmt.Println("Comparisons:", comparisons)
+	fmt.Println("Swaps:", swaps)
+
+	return duration
 }

@@ -4,54 +4,77 @@ import (
 	"advanced-algorithms/algorithms"
 	"advanced-algorithms/random_numbers"
 	"advanced-algorithms/strategy"
+	"advanced-algorithms/utils"
 	"fmt"
 	"os"
 	"strconv"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Uso: go run main.go <quantidade_de_numeros>")
-		return
-	}
 
-	numElements, err := strconv.Atoi(os.Args[1])
-	if err != nil || numElements <= 0 {
-		fmt.Println("Por favor, forneça um número válido maior que 0.")
-		return
-	}
+    if len(os.Args) < 4 {
+        fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execução> <algoritmo específico ou todos>")
+        fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, all")
+        return
+    }
 
-	filename := "numbers.txt"
+    numElements, err := strconv.Atoi(os.Args[1])
+    if err != nil || numElements <= 0 {
+        fmt.Println("Por favor, forneça um número válido maior que 0 para quantidade de números.")
+        return
+    }
 
-	err = random_numbers.GenerateRandomNumbers(numElements, filename)
-	if err != nil {
-		fmt.Println("Erro ao gerar números:", err)
-		return
-	}
+    numExecutions, err := strconv.Atoi(os.Args[2])
+    if err != nil || numExecutions <= 0 {
+        fmt.Println("Por favor, forneça um número válido maior que 0 para quantidade de execução.")
+        return
+    }
 
-	numbers, err := random_numbers.LoadNumbers(filename)
-	if err != nil {
-		fmt.Println("Erro ao carregar números:", err)
-		return
-	}
+    algorithm := os.Args[3]
 
-	fmt.Println("Quantidade de números gerados:", len(numbers))
+    algorithmsMap := map[string]strategy.SortStrategy{
+        "bubble_sort":         algorithms.BubbleSortStruct{},
+        "bubble_sort_improved": algorithms.BubbleSortImproved{},
+        "insertion_sort":      algorithms.InsertionSort{},
+        "selection_sort":      algorithms.SelectionSort{},
+    }
 
-	clone := func(arr []int) []int {
-		newArr := make([]int, len(arr))
-		copy(newArr, arr)
-		return newArr
-	}
+    if algorithm == "all" {
+        for name, strategyByUser := range algorithmsMap {
+            fmt.Printf("Executando %s...\n", name)
+            sorter := strategy.NewSorter(strategyByUser)
+            var totalDuration float64
 
-	sorter := strategy.NewSorter(algorithms.BubbleSort{})
-	fmt.Println("Bubble Sort:", sorter.Sort(clone(numbers)))
+            for i := 0; i < numExecutions; i++ {
+                numberToSort := random_numbers.GenerateRandomNumbers(numElements)
+                duration := sorter.ExecuteSort(utils.Clone(numberToSort))
+                totalDuration += duration
+                fmt.Println("--------------------------------------------------")
+            }
+            averageDuration := totalDuration / float64(numExecutions)
+            fmt.Printf("Tempo médio de execução (ms): %.6f\n", averageDuration)
+        }
+        return
+    }
 
-	sorter.SetStrategy(algorithms.BubbleSortImproved{})
-	fmt.Println("Bubble Sort Melhorado:", sorter.Sort(clone(numbers)))
+    strategyByUser, exists := algorithmsMap[algorithm]
 
-	sorter.SetStrategy(algorithms.InsertionSort{})
-	fmt.Println("Insertion Sort:", sorter.Sort(clone(numbers)))
+    if !exists {
+        fmt.Println("Algoritmo não reconhecido. Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, all")
+        return
+    }
 
-	sorter.SetStrategy(algorithms.SelectionSort{})
-	fmt.Println("Selection Sort:", sorter.Sort(clone(numbers)))
+    sorter := strategy.NewSorter(strategyByUser)
+    var totalDuration float64
+
+    for i := 0; i < numExecutions; i++ {
+
+        numberToSort := random_numbers.GenerateRandomNumbers(numElements)
+
+        duration := sorter.ExecuteSort(utils.Clone(numberToSort))
+        totalDuration += duration
+        fmt.Println("--------------------------------------------------")
+    }
+    averageDuration := totalDuration / float64(numExecutions)
+    fmt.Printf("Tempo médio de execução (ms): %.6f\n", averageDuration)
 }

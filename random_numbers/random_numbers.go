@@ -9,7 +9,7 @@ import (
 )
 
 // Gera números aleatórios e salva no arquivo
-func GenerateRandomNumbers(n int, filename string) error {
+func GenerateRandomNumbersByFile(n int, filename string) error {
 	rand.Seed(time.Now().UnixNano())
 
 	file, err := os.Create(filename)
@@ -48,4 +48,16 @@ func LoadNumbers(filename string) ([]int, error) {
 		}
 	}
 	return numbers, nil
+}
+
+func GenerateRandomNumbers(maximumNumber int) []int {
+	rand.Seed(time.Now().UnixNano())
+	numbers := make([]int, maximumNumber)
+
+	for i := 0; i < maximumNumber; i++ {
+		randomNumber := rand.Intn(maximumNumber)
+		numbers[i] = randomNumber
+	}
+
+	return numbers
 }

@@ -46,8 +46,6 @@ func (b BubbleSort) SortWithProgress(arr []int) ([]int, int, int) {
     return arr, comparisons, swaps
 }
 
-
-
 func (b BubbleSort) Name() string {
     return "Bubble Sort"
 }

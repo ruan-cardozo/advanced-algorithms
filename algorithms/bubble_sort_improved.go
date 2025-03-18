@@ -22,3 +22,7 @@ func (b BubbleSortImproved) Sort(arr []int) ([]int, int, int) {
 	}
 	return arr, comparisons, swaps
 }
+
+func (b BubbleSortImproved) Name() string {
+	return "Bubble Sort Improved"
+}

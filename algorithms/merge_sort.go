@@ -50,3 +50,7 @@ func Merge(left, right []int, comparisons, swaps *int) []int {
 
     return result
 }
+
+func (m MergeSort) Name() string {
+    return "Merge Sort"
+}

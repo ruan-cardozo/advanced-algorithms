@@ -35,3 +35,7 @@ func (q QuickSort) Sort(arr []int) ([]int, int, int) {
 	sortedArr := quickSort(arr, 0, len(arr)-1)
 	return sortedArr, comparisons, swaps
 }
+
+func (q QuickSort) Name() string {
+	return "Quick Sort"
+}

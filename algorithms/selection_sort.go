@@ -22,3 +22,7 @@ func (s SelectionSort) Sort(arr []int) ([]int, int, int) {
 	}
 	return sorted, comparisons, swaps
 }
+
+func (s SelectionSort) Name() string {
+	return "Selection Sort"
+}

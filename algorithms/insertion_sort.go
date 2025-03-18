@@ -24,3 +24,7 @@ func (i InsertionSort) Sort(arr []int) ([]int, int, int) {
 	}
 	return sorted, comparisons, swaps
 }
+
+func (i InsertionSort) Name() string {
+	return "Insertion Sort"
+}

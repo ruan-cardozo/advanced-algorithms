@@ -2,6 +2,7 @@ package main
 
 import (
 	"advanced-algorithms/algorithms"
+	tracer "advanced-algorithms/otel"
 	"advanced-algorithms/random_numbers"
 	"advanced-algorithms/strategy"
 	"advanced-algorithms/utils"
@@ -13,6 +14,9 @@ import (
 )
 
 func main() {
+
+	shutdown := tracer.InitTracer()
+    defer shutdown()
 
 	if len(os.Args) < 4 {
 		fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execuções> <algoritmo|algoritmos separados por virgula|all>")

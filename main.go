@@ -16,12 +16,12 @@ import (
 func main() {
 
 	shutdown := tracer.InitTracer()
-    defer shutdown()
+	defer shutdown()
 
 	if len(os.Args) < 4 {
 		fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execuções> <algoritmo|algoritmos separados por virgula|all>")
 		fmt.Println("Exemplo: go run main.go 100 10 bubble_sort,bubble_sort_improved")
-		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, quick_sort, tim_sort, heap_sort, all")
+		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, tim_sort, heap_sort, all, ")
 		return
 	}
 
@@ -49,40 +49,37 @@ func main() {
 		"quick_sort":           algorithms.QuickSort{},
 		"tim_sort":             algorithms.TimSort{},
 		"heap_sort":            algorithms.HeapSort{},
+		"parallel_merge_sort":  algorithms.ParallelMergeSort{},
 	}
 
 	if regex.MatchString(algorithm) {
 
 		algorithmsList := strings.Split(algorithm, ",")
 
-		for _, algorithm := range algorithmsList {
+		for i := 0; i < numExecutions; i++ {
+			numberToSort := random_numbers.GenerateRandomNumbers(numElements)
 
-			strategyByUser, exists := algorithmsMap[algorithm]
+			for _, algorithm := range algorithmsList {
 
-			if !exists {
-				fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, quick_sort, tim_sort, heap_sort, all")
-				return
-			}
+				strategyByUser, exists := algorithmsMap[algorithm]
 
-			//			fmt.Printf("Executando %s...\n", algorithm)
-			sorter := strategy.NewSorter(strategyByUser)
-			var totalDuration float64
+				if !exists {
+					fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, quick_sort, tim_sort, heap_sort, all")
+					return
+				}
 
-			for i := 0; i < numExecutions; i++ {
-				numberToSort := random_numbers.GenerateRandomNumbers(numElements)
+				sorter := strategy.NewSorter(strategyByUser)
+				var totalDuration float64
+
 				duration := sorter.ExecuteSort(utils.Clone(numberToSort))
 				totalDuration += duration
-				//				fmt.Println("--------------------------------------------------")
 			}
-			//			averageDuration := totalDuration / float64(numExecutions)
-			//			fmt.Printf("Tempo médio de execução (ms): %.6f\n", averageDuration)
 		}
 		return
 	}
 
 	if algorithm == "all" {
 		for _, strategyByUser := range algorithmsMap {
-			//			fmt.Printf("Executando %s...\n", name)
 			sorter := strategy.NewSorter(strategyByUser)
 			var totalDuration float64
 
@@ -90,10 +87,7 @@ func main() {
 				numberToSort := random_numbers.GenerateRandomNumbers(numElements)
 				duration := sorter.ExecuteSort(utils.Clone(numberToSort))
 				totalDuration += duration
-				//				fmt.Println("--------------------------------------------------")
 			}
-			//			averageDuration := totalDuration / float64(numExecutions)
-			//			fmt.Printf("Tempo médio de execução (ms): %.6f\n", averageDuration)
 		}
 		return
 	}
@@ -114,8 +108,5 @@ func main() {
 
 		duration := sorter.ExecuteSort(utils.Clone(numberToSort))
 		totalDuration += duration
-		//		fmt.Println("--------------------------------------------------")
 	}
-	// averageDuration := totalDuration / float64(numExecutions)
-	// fmt.Printf("Tempo médio de execução (ms): %.6f\n", averageDuration)
 }

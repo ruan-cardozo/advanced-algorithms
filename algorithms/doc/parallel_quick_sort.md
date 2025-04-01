@@ -59,3 +59,84 @@ func (pq ParallelQuickSort) SortParallel(arr []int) ([]int, int, int) {
 
     return arr, comparisons, swaps
 }
+```
+
+### Função Recursiva com Paralelismo
+
+```go
+func (pq ParallelQuickSort) quickSortParallel(arr []int, low, high int, wg *sync.WaitGroup, comparisons *int, swaps *int) {
+    if low < high {
+        pivot, localComparisons, localSwaps := pq.partition(arr, low, high)
+        *comparisons += localComparisons
+        *swaps += localSwaps
+
+        if high-low > THRESHOLD {
+            wg.Add(2)
+
+            go func() {
+                defer wg.Done()
+                pq.quickSortParallel(arr, low, pivot-1, wg, comparisons, swaps)
+            }()
+
+            go func() {
+                defer wg.Done()
+                pq.quickSortParallel(arr, pivot+1, high, wg, comparisons, swaps)
+            }()
+        } else {
+            pq.quickSortSequential(arr, low, pivot-1, comparisons, swaps)
+            pq.quickSortSequential(arr, pivot+1, high, comparisons, swaps)
+        }
+    }
+}
+```
+
+### Particionamento
+
+```go
+func (pq ParallelQuickSort) partition(arr []int, low, high int) (int, int, int) {
+    pivot := arr[high]
+    i := low - 1
+    comparisons := 0
+    swaps := 0
+
+    for j := low; j < high; j++ {
+        comparisons++
+        if arr[j] < pivot {
+            i++
+            arr[i], arr[j] = arr[j], arr[i]
+            swaps++
+        }
+    }
+
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    swaps++
+
+    return i + 1, comparisons, swaps
+}
+```
+
+## Vantagens
+
+- **Desempenho Melhorado**:
+  - Para arrays grandes, o paralelismo reduz significativamente o tempo de execução.
+- **Aproveitamento de Recursos**:
+  - Utiliza múltiplos núcleos da CPU para processar partições simultaneamente.
+
+## Limitações
+
+- **Overhead de Goroutines**:
+  - Para arrays pequenos, o overhead de criar goroutines pode superar os benefícios do paralelismo.
+- **Dependência de Hardware**:
+  - O desempenho depende do número de núcleos disponíveis no sistema.
+
+## Comparação com Quick Sort Sequencial
+
+| Característica         | Quick Sort Sequencial | Parallel Quick Sort       |
+|------------------------|-----------------------|---------------------------|
+| **Tempo de Execução**  | Mais lento para arrays grandes | Mais rápido para arrays grandes |
+| **Uso de CPU**         | Single-threaded       | Multi-threaded (goroutines) |
+| **Overhead**           | Nenhum               | Overhead de goroutines    |
+
+## Conclusão
+
+O **Parallel Quick Sort** é uma versão otimizada do Quick Sort que utiliza paralelismo para melhorar o desempenho em arrays grandes. Ele é ideal para sistemas multicore e cenários onde o tamanho do array justifica o custo do paralelismo. No entanto, para arrays pequenos, o Quick Sort sequencial pode ser mais eficiente devido ao menor overhead.

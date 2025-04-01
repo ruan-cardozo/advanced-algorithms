@@ -21,7 +21,7 @@ func main() {
 	if len(os.Args) < 4 {
 		fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execuções> <algoritmo|algoritmos separados por virgula|all>")
 		fmt.Println("Exemplo: go run main.go 100 10 bubble_sort,bubble_sort_improved")
-		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, tim_sort, heap_sort, all, ")
+		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, parallel_quick_sort,tim_sort, heap_sort, all")
 		return
 	}
 
@@ -50,6 +50,7 @@ func main() {
 		"tim_sort":             algorithms.TimSort{},
 		"heap_sort":            algorithms.HeapSort{},
 		"parallel_merge_sort":  algorithms.ParallelMergeSort{},
+		"parallel_quick_sort":  algorithms.ParallelQuickSort{},
 	}
 
 	if regex.MatchString(algorithm) {
@@ -64,7 +65,7 @@ func main() {
 				strategyByUser, exists := algorithmsMap[algorithm]
 
 				if !exists {
-					fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, quick_sort, tim_sort, heap_sort, all")
+					fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, parallel_quick_sort,tim_sort, heap_sort, all")
 					return
 				}
 
@@ -95,7 +96,7 @@ func main() {
 	strategyByUser, exists := algorithmsMap[algorithm]
 
 	if !exists {
-		fmt.Println("Algoritmo não reconhecido. Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, quick_sort, tim_sort, heap_sort, all")
+		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, parallel_quick_sort,tim_sort, heap_sort, all")
 		return
 	}
 

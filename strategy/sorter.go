@@ -28,7 +28,7 @@ func (s *Sorter) SetStrategy(strategy SortStrategy) {
 	s.name = strategy.Name()
 }
 
-func (s *Sorter) ExecuteSort(arr []int) float64 {
+func (s *Sorter) ExecuteSort(arr []int) (float64, []int) {
 
 	ctx := context.Background()
 	tr := tracer.Tracer()
@@ -89,5 +89,5 @@ func (s *Sorter) ExecuteSort(arr []int) float64 {
 	fmt.Printf("Sorted: %v\n", isValid)
 	fmt.Printf("============\n\n")
 
-	return duration
+	return duration, sortedArray
 }

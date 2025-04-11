@@ -13,19 +13,31 @@ import (
 	"strings"
 )
 
+var numberToFind int
+
 func main() {
 
 	shutdown := tracer.InitTracer()
 	defer shutdown()
 
 	if len(os.Args) < 4 {
-		fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execuções> <algoritmo|algoritmos separados por virgula|all>")
+		fmt.Println("Uso: go run main.go <quantidade_de_numeros> <quantidade_de_execuções> <algoritmo|algoritmos separados por virgula|all> <number to find using binary search (opcional)>")
 		fmt.Println("Exemplo: go run main.go 100 10 bubble_sort,bubble_sort_improved")
 		fmt.Println("Algoritmos disponíveis: bubble_sort, bubble_sort_improved, insertion_sort, selection_sort, merge_sort, parallel_merge_sort, quick_sort, parallel_quick_sort,tim_sort, heap_sort, all")
 		return
 	}
 
+	if len(os.Args) == 8 {
+		var err error
+		numberToFind, err = strconv.Atoi(os.Args[7])
+		if err != nil {
+			fmt.Println("Por favor, forneça um número válido para o número a ser encontrado.")
+			return
+		}
+	}
+
 	numElements, err := strconv.Atoi(os.Args[1])
+
 	if err != nil || numElements <= 0 {
 		fmt.Println("Por favor, forneça um número válido maior que 0 para quantidade de números.")
 		return
@@ -72,7 +84,7 @@ func main() {
 				sorter := strategy.NewSorter(strategyByUser)
 				var totalDuration float64
 
-				duration := sorter.ExecuteSort(utils.Clone(numberToSort))
+				duration,_ := sorter.ExecuteSort(utils.Clone(numberToSort))
 				totalDuration += duration
 			}
 		}
@@ -86,7 +98,7 @@ func main() {
 
 			for i := 0; i < numExecutions; i++ {
 				numberToSort := random_numbers.GenerateRandomNumbers(numElements)
-				duration := sorter.ExecuteSort(utils.Clone(numberToSort))
+				duration,_ := sorter.ExecuteSort(utils.Clone(numberToSort))
 				totalDuration += duration
 			}
 		}
@@ -107,7 +119,19 @@ func main() {
 
 		numberToSort := random_numbers.GenerateRandomNumbers(numElements)
 
-		duration := sorter.ExecuteSort(utils.Clone(numberToSort))
+		duration, sortedArray := sorter.ExecuteSort(utils.Clone(numberToSort))
+
+		number := algorithms.BinarySearch(sortedArray, sortedArray[0], sortedArray[len(sortedArray)-1], numberToFind)
+
+		if number == -1 {
+			fmt.Println("Número não encontrado")
+		} else {
+
+			fmt.Println("O número foi encontrado no array:", number)
+		}
+
+		fmt.Println("Sorted Array:", sortedArray)
+
 		totalDuration += duration
 	}
 }
